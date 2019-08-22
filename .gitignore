@@ -1,0 +1,10 @@
+.idea/
+.vscode/
+node_modules/
+env/
+venv/
+media/
+__pycache__/
+backup.sql
+todo.txt
+fixed.txt
