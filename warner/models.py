@@ -24,25 +24,51 @@ class Prevision(models.Model):
     amount = models.FloatField()
     reason = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return self.reason
+
     class Meta:
         db_table = 'prevision'
 
 
 class Epoch(models.Model):
     date = models.DateField()
-    prevision_set = models.ManyToManyField(Prevision)
+    prevision_set = models.ManyToManyField(Prevision, blank=True)
 
     def __str__(self):
         return str(self.date)
 
     def prev(self):
-        return Epoch.objects.filter(date__lt=self.date).order_by('date').first()
+        return Epoch.objects.filter(date__lt=self.date).order_by('date').last()
 
     def next(self):
         return Epoch.objects.filter(date__gt=self.date).order_by('date').first()
 
     def is_over(self):
         return self.date < datetime.datetime.now().date()
+
+    def is_ongoing(self):
+        return self.date == datetime.datetime.now().date()
+
+    def income(self):
+        result = 0
+        if self.is_over():
+            for transaction in self.transaction_set.filter(amount__gt=0):
+                result += transaction.amount
+        else:
+            for prevision in self.prevision_set.filter(amount__gt=0):
+                result += prevision.amount
+        return result
+
+    def outgo(self):
+        result = 0
+        if self.is_over():
+            for transaction in self.transaction_set.filter(amount__lt=0):
+                result += transaction.amount
+        else:
+            for prevision in self.prevision_set.filter(amount__lt=0):
+                result += prevision.amount
+        return -result
 
     def balance(self):
         result = 0
@@ -53,6 +79,8 @@ class Epoch(models.Model):
         else:
             for prevision in self.prevision_set.all():
                 result += prevision.amount
+        if self.prev():
+            result += self.prev().balance()
         return result
 
     class Meta:
@@ -63,6 +91,10 @@ class Transaction(models.Model):
     amount = models.FloatField()
     epoch = models.ForeignKey(Epoch, on_delete=models.CASCADE)
     prevision = models.ForeignKey(Prevision, null=True, blank=True, on_delete=models.CASCADE)
+    reason = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.reason
 
     class Meta:
         db_table = 'transaction'

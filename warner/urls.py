@@ -18,5 +18,6 @@ from django.urls import path
 from warner.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', welcome)
+    path('', home),
+    path('epoch/<int:id>/', view_epoch, name='view-epoch')
 ]

@@ -1,0 +1,131 @@
+{% extends 'layouts/base.html' %}
+{% block title %}
+    Home
+{% endblock %}
+{% block style %}
+    <style>
+        a {
+            text-decoration: unset !important;
+            color: unset !important;
+        }
+
+        .card-epoch-over {
+            background: rgba(0, 0, 0, .05);
+            border: 0;
+            color: grey;
+        }
+
+        .card-epoch-ongoing {
+            color: #2d99f0;
+            font-weight: bold;
+            background: rgba(0, 172, 255, 0.02);
+            border-color: #2d99f0;
+        }
+
+        .col-2.position-fixed {
+            right: 0px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="px-3">
+        <div class="row">
+            <div class="col-10">
+                <div class="row">
+                    {% for epoch in epochs %}
+                        <div class="col-2">
+                            <div class="card my-2 {% if epoch.is_over %}  card-epoch-over {% elif epoch.is_ongoing %} card-epoch-ongoing {% endif %}">
+                                <div class="text-center">
+                                    <a data-toggle="collapse" href="#epochCollapse_{{ epoch.id }}" role="button"
+                                       aria-expanded="false">
+                                        <small>{{ epoch.date | date:"D d M Y" }}
+                                            {% if epoch.income > 0 %}
+                                                <span title="+{{ epoch.income }} €" class="text-success"><i
+                                                        class="fa fa-circle"></i></span>
+                                            {% endif %}
+                                            {% if epoch.outgo > 0 %}
+                                                <span title="-{{ epoch.outgo }} €" class="text-danger"><i
+                                                        class="fa fa-circle"></i></span>
+                                            {% endif %}
+                                        </small>
+                                    </a>
+                                    <div class="collapse {% if forecast_epoch and forecast_epoch == epoch %} show {% endif %}" id="epochCollapse_{{ epoch.id }}">
+                                        <div class="card-body">
+                                            Previsions <br>
+                                            {% for prevision in epoch.prevision_set.all %}
+                                                <small>{{ prevision.amount }} € : {{ prevision.reason }}</small><br>
+                                            {% endfor %}
+                                        {% if epoch.is_over or epoch.is_ongoing%}
+                                            <hr>
+                                            Transactions <br>
+                                            {% for transaction in epoch.transaction_set.all %}
+                                                <small>{{ transaction.amount }} € : {{ transaction.reason }}</small><br>
+                                            {% endfor %}
+                                        {% endif %}
+                                            <hr>
+                                            <a class="btn btn-primary text-light btn-sm" href="{% url 'view-epoch' epoch.id %}"> Compute Balance</a>
+                                        </div>
+{#                                    <div class="card-body">#}
+{#                                            Previsions <br>#}
+{#                                            <table class="table">#}
+{#                                                <thead>#}
+{#                                                <tr>#}
+{#                                                    <th scope="col">Montant</th>#}
+{#                                                    <th scope="col">Motif</th>#}
+{#                                                </tr>#}
+{#                                                </thead>#}
+{#                                                <tbody>#}
+{#                                                {% for prevision in epoch.prevision_set.all %}#}
+{#                                                    <tr>#}
+{#                                                        <td>{{ prevision.amount }} €</td>#}
+{#                                                        <td>{{ prevision.reason }}</td>#}
+{#                                                    </tr>#}
+{#                                                {% endfor %}#}
+{#                                                </tbody>#}
+{#                                            </table>#}
+{##}
+{#                                            {% if epoch.is_over or epoch.is_ongoing %}#}
+{#                                                Transactions#}
+{#                                                <hr>#}
+{#                                                <table class="table">#}
+{#                                                <thead>#}
+{#                                                <tr>#}
+{#                                                    <th scope="col">Montant</th>#}
+{#                                                    <th scope="col-">Motif</th>#}
+{#                                                </tr>#}
+{#                                                </thead>#}
+{#                                                <tbody>#}
+{#                                                {% for transactions in epoch.transactions_set.all %}#}
+{#                                                    <tr>#}
+{#                                                        <td>{{ transactions.amount }} €</td>#}
+{#                                                        <td>{{ transactions.reason }}</td>#}
+{#                                                    </tr>#}
+{#                                                {% endfor %}#}
+{#                                                </tbody>#}
+{#                                            </table>#}
+{#                                            {% endif %}#}
+{#                                        </div>#}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-2 position-fixed">
+                <div class="card mt-2">
+                    <div class="card-header">Account Balance</div>
+                    <div class="card-body">
+                        Today: {{ balance.today }} € <br>
+                        Over the school year: {{ balance.period }} € <br>
+
+                        {% if forecast_epoch %}
+                            <hr>
+                            On {{ forecast_epoch.date | date:"D d M Y" }} : {{ forecast_epoch.balance }} €
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
