@@ -85,6 +85,7 @@ def save_transaction(request):
             transaction.epoch = form.cleaned_data['epoch_select']
             transaction.epoch.is_useful = True
             transaction.epoch.save()
+            transaction.forecast = form.cleaned_data['forecast_select']
             transaction.save()
     return redirect('home')
 

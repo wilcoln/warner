@@ -78,7 +78,10 @@ class Epoch(models.Model):
             val = self.transaction_set.all().aggregate(Sum('amount'))['amount__sum']
             result += val if val is not None else 0
             if not self.is_over():
-                val = self.forecast_set.all().aggregate(Sum('amount'))['amount__sum']
+                if self.is_ongoing():
+                    val = self.forecast_set.filter(transaction__isnull=True).aggregate(Sum('amount'))['amount__sum']
+                else:
+                    val = self.forecast_set.all().aggregate(Sum('amount'))['amount__sum']
                 result += val if val is not None else 0
         if self.prev():
             result += self.prev().balance()

@@ -1,5 +1,5 @@
 from django import forms
-from warner.models import Epoch
+from warner.models import Epoch, Forecast
 import datetime
 
 
@@ -14,3 +14,4 @@ class TransactionForm(forms.Form):
     amount = forms.FloatField(label='Amount')
     reason = forms.CharField(label='Reason', required=False)
     epoch_select = forms.ModelChoiceField(queryset=Epoch.objects.filter(date__lte=datetime.datetime.now().date()).order_by('-date'))
+    forecast_select = forms.ModelChoiceField(queryset=Forecast.objects.all())
