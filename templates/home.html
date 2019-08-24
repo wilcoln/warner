@@ -29,7 +29,7 @@
 {% endblock %}
 {% block content %}
     <div class="px-3">
-        <div class="row">
+        <div class="row" style="overflow: auto">
             <div class="col-10">
                 <div class="row">
                     {% for epoch in epochs %}
@@ -42,11 +42,11 @@
                                         <small>{{ epoch.date | date:"D d M Y" }}
                                             {% if epoch.income > 0 %}
                                                 <span title="+{{ epoch.income }} €" class="text-success"><i
-                                                        class="fa fa-circle"></i></span>
+                                                        class="fa fa-arrow-circle-up"></i></span>
                                             {% endif %}
                                             {% if epoch.outgo > 0 %}
                                                 <span title="-{{ epoch.outgo }} €" class="text-danger"><i
-                                                        class="fa fa-circle"></i></span>
+                                                        class="fa fa-arrow-circle-down"></i></span>
                                             {% endif %}
                                         </small>
                                     </a>
@@ -73,46 +73,7 @@
                                             <a class="btn btn-primary text-light btn-sm"
                                                href="{% url 'mark-as-useful' epoch.id %}"> Mark as useful</a>{% endcomment %}
                                         </div>
-                                        {#                                    <div class="card-body">#}
-                                        {#                                            Previsions <br>#}
-                                        {#                                            <table class="table">#}
-                                        {#                                                <thead>#}
-                                        {#                                                <tr>#}
-                                        {#                                                    <th scope="col">Montant</th>#}
-                                        {#                                                    <th scope="col">Motif</th>#}
-                                        {#                                                </tr>#}
-                                        {#                                                </thead>#}
-                                        {#                                                <tbody>#}
-                                        {#                                                {% for forecast in epoch.forecast_set.all %}#}
-                                        {#                                                    <tr>#}
-                                        {#                                                        <td>{{ forecast.amount }} €</td>#}
-                                        {#                                                        <td>{{ forecast.reason }}</td>#}
-                                        {#                                                    </tr>#}
-                                        {#                                                {% endfor %}#}
-                                        {#                                                </tbody>#}
-                                        {#                                            </table>#}
-                                        {##}
-                                        {#                                            {% if epoch.is_over or epoch.is_ongoing %}#}
-                                        {#                                                Transactions#}
-                                        {#                                                <hr>#}
-                                        {#                                                <table class="table">#}
-                                        {#                                                <thead>#}
-                                        {#                                                <tr>#}
-                                        {#                                                    <th scope="col">Montant</th>#}
-                                        {#                                                    <th scope="col-">Motif</th>#}
-                                        {#                                                </tr>#}
-                                        {#                                                </thead>#}
-                                        {#                                                <tbody>#}
-                                        {#                                                {% for transactions in epoch.transactions_set.all %}#}
-                                        {#                                                    <tr>#}
-                                        {#                                                        <td>{{ transactions.amount }} €</td>#}
-                                        {#                                                        <td>{{ transactions.reason }}</td>#}
-                                        {#                                                    </tr>#}
-                                        {#                                                {% endfor %}#}
-                                        {#                                                </tbody>#}
-                                        {#                                            </table>#}
-                                        {#                                            {% endif %}#}
-                                        {#                                        </div>#}
+
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +107,7 @@
                         <a href="{% url 'index-forecast' %}">Consulter les prévisions</a>
                         <br>
                         <a href="#">Supprimer une prévision</a>
-                        {#                        Supprime toutes les occurrences de la prévision #}
+                        {# Supprime toutes les occurrences de la prévision #}
                     </div>
                 </div>
 
@@ -165,4 +126,12 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block script %}
+    <script>
+        document.onload = function (){
+            let elt = document.querySelector('.card-ongoing')
+            elt.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
+        }
+    </script>
 {% endblock %}
