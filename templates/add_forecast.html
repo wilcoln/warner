@@ -1,0 +1,96 @@
+{% extends 'layouts/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}
+    Add Forecast
+{% endblock %}
+{% block style %}
+    <style>
+        select.form-control[multiple]{
+            height:13rem;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1>Add Forecast</h1>
+        <form method="post" action="{% url 'save-forecast' %}">
+            {% csrf_token %}
+            {{ forecast_form | crispy }}
+            <input class="btn btn-primary" type="submit" value="Save">
+        </form>
+        <hr>
+        <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#recDef"> Définir La
+            récurrence
+        </button>
+        <div class="collapse card mt-3" id="recDef">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
+                             aria-orientation="vertical">
+                            <a class="nav-link active" id="v-pills-singleton-tab" data-toggle="pill"
+                               href="#v-pills-singleton"
+                               role="tab" aria-controls="v-pills-singleton" aria-selected="true">Une seule fois</a>
+                            <a class="nav-link" id="v-pills-day-tab" data-toggle="pill" href="#v-pills-day"
+                               role="tab" aria-controls="v-pills-day" aria-selected="true">Tous les jours</a>
+                            <a class="nav-link" id="v-pills-week-tab" data-toggle="pill" href="#v-pills-week"
+                               role="tab" aria-controls="v-pills-week" aria-selected="false">Toutes les semaines</a>
+                            <a class="nav-link" id="v-pills-month-tab" data-toggle="pill" href="#v-pills-month"
+                               role="tab" aria-controls="v-pills-month" aria-selected="false">Tous les Mois</a>
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <div class="tab-content" id="v-pills-tabContent">
+                            <div class="tab-pane fade show active" id="v-pills-singleton" role="tabpanel"
+                                 aria-labelledby="v-pills-singleton-tab">
+                                <input type="date" class="form-control-sm">
+                            </div>
+                            <div class="tab-pane fade show" id="v-pills-day" role="tabpanel"
+                                 aria-labelledby="v-pills-day-tab">
+                                    {% include 'includes/ends_on.html' with interval='day'%}
+                            </div>
+                            <div class="tab-pane fade" id="v-pills-week" role="tabpanel"
+                                 aria-labelledby="v-pills-week-tab">
+                                <form class="form-inline">
+                                    <div class="custom-control custom-checkbox ml-3">
+                                        <input type="checkbox" class="custom-control-input" id="customCheck1">
+                                        <label class="custom-control-label" for="customCheck1">M</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox ml-3">
+                                        <input type="checkbox" class="custom-control-input" id="customCheck2">
+                                        <label class="custom-control-label" for="customCheck2">T</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox ml-3">
+                                        <input type="checkbox" class="custom-control-input" id="customCheck3">
+                                        <label class="custom-control-label" for="customCheck3">W</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox ml-3">
+                                        <input type="checkbox" class="custom-control-input" id="customCheck4">
+                                        <label class="custom-control-label" for="customCheck4">T</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox ml-3">
+                                        <input type="checkbox" class="custom-control-input" id="customCheck5">
+                                        <label class="custom-control-label" for="customCheck5">F</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox ml-3">
+                                        <input type="checkbox" class="custom-control-input" id="customCheck6">
+                                        <label class="custom-control-label" for="customCheck6">S</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox ml-3">
+                                        <input type="checkbox" class="custom-control-input" id="customCheck7">
+                                        <label class="custom-control-label" for="customCheck7">S</label>
+                                    </div>
+                                </form>
+                                {% include 'includes/ends_on.html' with interval='week' %}
+                            </div>
+                            <div class="tab-pane fade" id="v-pills-month" role="tabpanel"
+                                 aria-labelledby="v-pills-month-tab"> Le <input type="number" min="1" max="31"> du mois
+                                {% include 'includes/ends_on.html' with interval='month' %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -4,7 +4,7 @@
 {% endblock %}
 {% block style %}
     <style>
-        a {
+        a.epoch-link {
             text-decoration: unset !important;
             color: unset !important;
         }
@@ -23,7 +23,7 @@
         }
 
         .col-2.position-fixed {
-            right: 0px;
+            right: 0;
         }
     </style>
 {% endblock %}
@@ -33,10 +33,11 @@
             <div class="col-10">
                 <div class="row">
                     {% for epoch in epochs %}
+                        {#                        Todo: On doit pouvoir ajouter une prévision sur cette epoch(ponctuelle), supprimer une prévision (juste son occurence sur l'epoch), ajouter une transation, supprimer une transation#}
                         <div class="col-2">
-                            <div class="card my-2 {% if epoch.is_over %}  card-epoch-over {% elif epoch.is_ongoing %} card-epoch-ongoing {% endif %}">
+                            <div class="card-epoch card my-2 {% if epoch.is_over %}  card-epoch-over {% elif epoch.is_ongoing %} card-epoch-ongoing {% endif %}">
                                 <div class="text-center">
-                                    <a data-toggle="collapse" href="#epochCollapse_{{ epoch.id }}" role="button"
+                                    <a class="epoch-link" data-toggle="collapse" href="#epochCollapse_{{ epoch.id }}" role="button"
                                        aria-expanded="false">
                                         <small>{{ epoch.date | date:"D d M Y" }}
                                             {% if epoch.income > 0 %}
@@ -49,62 +50,69 @@
                                             {% endif %}
                                         </small>
                                     </a>
-                                    <div class="collapse {% if forecast_epoch and forecast_epoch == epoch %} show {% endif %}" id="epochCollapse_{{ epoch.id }}">
+                                    <div class="collapse {% if current_epoch and current_epoch == epoch %} show {% endif %}"
+                                         id="epochCollapse_{{ epoch.id }}">
                                         <div class="card-body">
                                             Previsions <br>
-                                            {% for prevision in epoch.prevision_set.all %}
-                                                <small>{{ prevision.amount }} € : {{ prevision.reason }}</small><br>
+                                            {% for forecast in epoch.forecast_set.all %}
+                                                <small>{{ forecast.amount }} € : {{ forecast.reason }}</small><br>
                                             {% endfor %}
-                                        {% if epoch.is_over or epoch.is_ongoing%}
+                                            {% if epoch.is_over or epoch.is_ongoing %}
+                                                <hr>
+                                                Transactions <br>
+                                                {% for transaction in epoch.transaction_set.all %}
+                                                    <small>{{ transaction.amount }} € : {{ transaction.reason }}</small>
+                                                    <br>
+                                                {% endfor %}
+                                            {% endif %}
                                             <hr>
-                                            Transactions <br>
-                                            {% for transaction in epoch.transaction_set.all %}
-                                                <small>{{ transaction.amount }} € : {{ transaction.reason }}</small><br>
-                                            {% endfor %}
-                                        {% endif %}
-                                            <hr>
-                                            <a class="btn btn-primary text-light btn-sm" href="{% url 'view-epoch' epoch.id %}"> Compute Balance</a>
+                                            <a class="btn btn-primary text-light btn-sm"
+                                               href="{% url 'view-epoch' epoch.id %}"> Compute Balance</a>
+                                            {% comment %}<br>
+                                            {{ epoch.is_useful }}
+                                            <a class="btn btn-primary text-light btn-sm"
+                                               href="{% url 'mark-as-useful' epoch.id %}"> Mark as useful</a>{% endcomment %}
                                         </div>
-{#                                    <div class="card-body">#}
-{#                                            Previsions <br>#}
-{#                                            <table class="table">#}
-{#                                                <thead>#}
-{#                                                <tr>#}
-{#                                                    <th scope="col">Montant</th>#}
-{#                                                    <th scope="col">Motif</th>#}
-{#                                                </tr>#}
-{#                                                </thead>#}
-{#                                                <tbody>#}
-{#                                                {% for prevision in epoch.prevision_set.all %}#}
-{#                                                    <tr>#}
-{#                                                        <td>{{ prevision.amount }} €</td>#}
-{#                                                        <td>{{ prevision.reason }}</td>#}
-{#                                                    </tr>#}
-{#                                                {% endfor %}#}
-{#                                                </tbody>#}
-{#                                            </table>#}
-{##}
-{#                                            {% if epoch.is_over or epoch.is_ongoing %}#}
-{#                                                Transactions#}
-{#                                                <hr>#}
-{#                                                <table class="table">#}
-{#                                                <thead>#}
-{#                                                <tr>#}
-{#                                                    <th scope="col">Montant</th>#}
-{#                                                    <th scope="col-">Motif</th>#}
-{#                                                </tr>#}
-{#                                                </thead>#}
-{#                                                <tbody>#}
-{#                                                {% for transactions in epoch.transactions_set.all %}#}
-{#                                                    <tr>#}
-{#                                                        <td>{{ transactions.amount }} €</td>#}
-{#                                                        <td>{{ transactions.reason }}</td>#}
-{#                                                    </tr>#}
-{#                                                {% endfor %}#}
-{#                                                </tbody>#}
-{#                                            </table>#}
-{#                                            {% endif %}#}
-{#                                        </div>#}
+                                        {#                                    <div class="card-body">#}
+                                        {#                                            Previsions <br>#}
+                                        {#                                            <table class="table">#}
+                                        {#                                                <thead>#}
+                                        {#                                                <tr>#}
+                                        {#                                                    <th scope="col">Montant</th>#}
+                                        {#                                                    <th scope="col">Motif</th>#}
+                                        {#                                                </tr>#}
+                                        {#                                                </thead>#}
+                                        {#                                                <tbody>#}
+                                        {#                                                {% for forecast in epoch.forecast_set.all %}#}
+                                        {#                                                    <tr>#}
+                                        {#                                                        <td>{{ forecast.amount }} €</td>#}
+                                        {#                                                        <td>{{ forecast.reason }}</td>#}
+                                        {#                                                    </tr>#}
+                                        {#                                                {% endfor %}#}
+                                        {#                                                </tbody>#}
+                                        {#                                            </table>#}
+                                        {##}
+                                        {#                                            {% if epoch.is_over or epoch.is_ongoing %}#}
+                                        {#                                                Transactions#}
+                                        {#                                                <hr>#}
+                                        {#                                                <table class="table">#}
+                                        {#                                                <thead>#}
+                                        {#                                                <tr>#}
+                                        {#                                                    <th scope="col">Montant</th>#}
+                                        {#                                                    <th scope="col-">Motif</th>#}
+                                        {#                                                </tr>#}
+                                        {#                                                </thead>#}
+                                        {#                                                <tbody>#}
+                                        {#                                                {% for transactions in epoch.transactions_set.all %}#}
+                                        {#                                                    <tr>#}
+                                        {#                                                        <td>{{ transactions.amount }} €</td>#}
+                                        {#                                                        <td>{{ transactions.reason }}</td>#}
+                                        {#                                                    </tr>#}
+                                        {#                                                {% endfor %}#}
+                                        {#                                                </tbody>#}
+                                        {#                                            </table>#}
+                                        {#                                            {% endif %}#}
+                                        {#                                        </div>#}
                                     </div>
                                 </div>
                             </div>
@@ -114,15 +122,44 @@
             </div>
             <div class="col-2 position-fixed">
                 <div class="card mt-2">
-                    <div class="card-header">Account Balance</div>
+                    <div class="card-header">Total Balance</div>
                     <div class="card-body">
-                        Today: {{ balance.today }} € <br>
-                        Over the school year: {{ balance.period }} € <br>
-
-                        {% if forecast_epoch %}
-                            <hr>
-                            On {{ forecast_epoch.date | date:"D d M Y" }} : {{ forecast_epoch.balance }} €
+                        {% if balance.today %}
+                            Today : {{ balance.today }} € <br>
                         {% endif %}
+                        {% if balance.period %}
+                            Over the school year : {{ balance.period }} € <br>
+                        {% endif %}
+                        {% if balance.epoch %}
+                            On {{ current_epoch.date | date:"D d M Y" }} : {{ balance.epoch }} €
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card mt-2">
+                    <div class="card-header">Prévisions</div>
+                    <div class="card-body">
+                        <a href="{% url 'add-forecast' %}">Ajouter une prévision</a>
+                        {% comment %}Ajout simple des epochs concernés, soit par ajout spécifique ou périodiquement en fixant un interval, une epoch de début et une époch de fin, mensuel préciser le x de chaque mois
+                        hebdo, le jour de chaque semaine{% endcomment %}
+                        <br>
+                        <a href="{% url 'index-forecast' %}">Consulter les prévisions</a>
+                        <br>
+                        <a href="#">Supprimer une prévision</a>
+                        {#                        Supprime toutes les occurrences de la prévision #}
+                    </div>
+                </div>
+
+                <div class="card mt-2">
+                    <div class="card-header">Transactions</div>
+                    <div class="card-body">
+                        <a href="{% url 'add-transaction' %}">Ajouter une transaction</a>
+                        {% comment %}Ajout d'une transaction, on selectionne une epoch (par défaut) l'epoch courante{% endcomment %}
+                        <br>
+                        <a href="{% url 'index-transaction' %}">Consulter les transactions</a>
+                        <br>
+                        <a href="#">Supprimer une transaction</a>
+                        {#                        Supprime la transaction #}
                     </div>
                 </div>
             </div>

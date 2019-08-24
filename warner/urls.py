@@ -18,6 +18,13 @@ from django.urls import path
 from warner.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home),
-    path('epoch/<int:id>/', view_epoch, name='view-epoch')
+    path('', home, name='home'),
+    path('epoch/<int:id>/', view_epoch, name='view-epoch'),
+    path('forecast/add/', add_forecast, name='add-forecast'),
+    path('transaction/add/', add_transaction, name='add-transaction'),
+    path('forecast/save/', save_forecast, name='save-forecast'),
+    path('transaction/save/', save_transaction, name='save-transaction'),
+    path('epoch/mark-as-useful/<int:id>', mark_as_useful, name='mark-as-useful'),
+    path('transaction/index/', index_transaction, name='index-transaction'),
+    path('forecast/index', index_forecast, name='index-forecast')
 ]
