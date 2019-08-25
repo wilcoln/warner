@@ -9,6 +9,9 @@
         <form method="post" action="{% url 'save-transaction' %}">
             {% csrf_token %}
             {{ transaction_form | crispy }}
+             {% if transaction %}
+                <input type="hidden" value="{{ transaction.id }}" name="transaction-id">
+            {% endif %}
             <input class="btn btn-primary" type="submit" value="Save">
         </form>
     </div>

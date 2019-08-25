@@ -4,7 +4,7 @@ import datetime
 
 
 class ForecastForm(forms.Form):
-    is_inevitable = forms.BooleanField(label='Inevitable', required=False)
+    is_active = forms.BooleanField(label='Active', required=False)
     amount = forms.FloatField(label='Amount')
     reason = forms.CharField(label='Reason', required=False)
     epochs_select = forms.ModelMultipleChoiceField(queryset=Epoch.objects.filter(date__gte=datetime.datetime.now().date()))

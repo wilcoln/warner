@@ -16,6 +16,9 @@
         <form method="post" action="{% url 'save-forecast' %}">
             {% csrf_token %}
             {{ forecast_form | crispy }}
+            {% if forecast %}
+                <input type="hidden" value="{{ forecast.id }}" name="forecast-id">
+            {% endif %}
             <input class="btn btn-primary" type="submit" value="Save">
         </form>
         <hr>

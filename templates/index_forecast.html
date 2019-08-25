@@ -1,0 +1,11 @@
+{% extends 'layouts/base.html' %}
+{% block title %}
+    List des Prévisions
+{% endblock %}
+{% block content %}
+    <ul>
+        {% for elt in list %}
+            <li><a href="{% url 'edit-forecast' elt.id %}">{{ elt }} </a>{% if elt.is_active %} <i class="fa fa-toggle-on"></i> {% else %} <i class="fa fa-toggle-off"></i>{% endif%}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

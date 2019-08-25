@@ -29,7 +29,7 @@
 {% endblock %}
 {% block content %}
     <div class="px-3">
-        <div class="row" style="overflow: auto">
+        <div class="row">
             <div class="col-10">
                 <div class="row">
                     {% for epoch in epochs %}
@@ -86,13 +86,13 @@
                     <div class="card-header">Total Balance</div>
                     <div class="card-body">
                         {% if balance.today %}
-                            Today : {{ balance.today }} € <br>
+                            Today : {{ balance.today | floatformat:-2 }} € <br>
                         {% endif %}
                         {% if balance.period %}
-                            Over the school year : {{ balance.period }} € <br>
+                            Over the school year : {{ balance.period | floatformat:-2 }} € <br>
                         {% endif %}
                         {% if balance.epoch %}
-                            On {{ current_epoch.date | date:"D d M Y" }} : {{ balance.epoch }} €
+                            On {{ current_epoch.date | date:"D d M Y" }} : {{ balance.epoch | floatformat:-2 }} €
                         {% endif %}
                     </div>
                 </div>

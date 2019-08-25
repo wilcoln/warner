@@ -45,17 +45,44 @@ def view_epoch(request, id):
 #     return render(request, 'home.html', {'epochs': epochs, 'balance': balance, 'current_epoch': epoch})
 
 
+def edit_forecast(request, id):
+    forecast = Forecast.objects.get(pk=id)
+    forecast_form = ForecastForm(initial={
+        'is_active': forecast.is_active,
+        'amount': forecast.amount,
+        'reason': forecast.reason,
+        'epochs_select': forecast.epoch_set.all(),
+    })
+    return render(request, 'edit_forecast.html', {'forecast_form': forecast_form, 'forecast': forecast})
+
+
+def edit_transaction(request, id):
+    transaction = Transaction.objects.get(pk=id)
+    transaction_form = TransactionForm(initial={
+        'amount': transaction.amount,
+        'reason': transaction.reason,
+        'epoch_select': transaction.epoch,
+        'forecast_select': transaction.forecast
+    })
+
+    return render(request, 'edit_transaction.html', {'transaction_form': transaction_form, 'transaction': transaction})
+
+
 def add_forecast(request):
-    forecast_form = ForecastForm()
-    return render(request, 'add_forecast.html', {'forecast_form': forecast_form})
+    forecast_form = ForecastForm(initial={'is_active': True})
+    return render(request, 'edit_forecast.html', {'forecast_form': forecast_form})
 
 
 def save_forecast(request):
     if request.method == 'POST':
         form = ForecastForm(request.POST)
         if form.is_valid():
-            forecast = Forecast()
-            forecast.is_inevitable = form.cleaned_data['is_inevitable']
+            if request.POST['forecast-id']:
+                forecast_id = int(request.POST['forecast-id'])
+                forecast = Forecast.objects.get(pk=forecast_id)
+            else:
+                forecast = Forecast()
+            forecast.is_active = form.cleaned_data['is_active']
             forecast.amount = form.cleaned_data['amount']
             forecast.reason = form.cleaned_data['reason']
             forecast.save()
@@ -79,7 +106,11 @@ def save_transaction(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
         if form.is_valid():
-            transaction = Transaction()
+            if request.POST['transaction-id']:
+                transaction_id = int(request.POST['transaction-id'])
+                transaction = Transaction.objects.get(pk=transaction_id)
+            else:
+                transaction = Transaction()
             transaction.amount = form.cleaned_data['amount']
             transaction.reason = form.cleaned_data['reason']
             transaction.epoch = form.cleaned_data['epoch_select']
@@ -92,15 +123,15 @@ def save_transaction(request):
 
 def index_transaction(request):
     transactions = Transaction.objects.all()
-    return render(request, 'list.html', {'list': transactions})
+    return render(request, 'index_transaction.html', {'list': transactions})
 
 
 def index_forecast(request):
     forecasts = Forecast.objects.all()
-    return render(request, 'list.html', {'list': forecasts})
+    return render(request, 'index_forecast.html', {'list': forecasts})
 
 
 def add_transaction(request):
     transaction_form = TransactionForm(initial={'epoch_select': Epoch.objects.filter(date=datetime.datetime.now().date()).first()})
-    return render(request, 'add_transaction.html', {'transaction_form': transaction_form})
+    return render(request, 'edit_transaction.html', {'transaction_form': transaction_form})
 

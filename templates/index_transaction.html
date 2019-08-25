@@ -1,11 +1,11 @@
 {% extends 'layouts/base.html' %}
 {% block title %}
-    List
+    List des Prévisions
 {% endblock %}
 {% block content %}
     <ul>
         {% for elt in list %}
-            <li>{{ elt }}</li>
+            <li><a href="{% url 'edit-transaction' elt.id %}">{{ elt }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}

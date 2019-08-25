@@ -22,6 +22,7 @@ class Tag(models.Model):
 
 class Forecast(models.Model):
     is_inevitable = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     amount = models.FloatField()
     reason = models.TextField(blank=True, null=True)
 
@@ -58,7 +59,7 @@ class Epoch(models.Model):
             val = self.transaction_set.filter(amount__gt=0).aggregate(Sum('amount'))['amount__sum']
             result += val if val is not None else 0
             if not self.is_over():
-                val = self.forecast_set.filter(amount__gt=0).aggregate(Sum('amount'))['amount__sum']
+                val = self.forecast_set.filter(is_active=True, amount__gt=0).aggregate(Sum('amount'))['amount__sum']
                 result += val if val is not None else 0
         return result
 
@@ -68,7 +69,7 @@ class Epoch(models.Model):
             val = self.transaction_set.filter(amount__lt=0).aggregate(Sum('amount'))['amount__sum']
             result += val if val is not None else 0
             if not self.is_over():
-                val = self.forecast_set.filter(amount__lt=0).aggregate(Sum('amount'))['amount__sum']
+                val = self.forecast_set.filter(is_active=True, amount__lt=0).aggregate(Sum('amount'))['amount__sum']
                 result += val if val is not None else 0
         return -result
 
@@ -79,9 +80,9 @@ class Epoch(models.Model):
             result += val if val is not None else 0
             if not self.is_over():
                 if self.is_ongoing():
-                    val = self.forecast_set.filter(transaction__isnull=True).aggregate(Sum('amount'))['amount__sum']
+                    val = self.forecast_set.filter(is_active=True, transaction__isnull=True).aggregate(Sum('amount'))['amount__sum']
                 else:
-                    val = self.forecast_set.all().aggregate(Sum('amount'))['amount__sum']
+                    val = self.forecast_set.filter(is_active=True).aggregate(Sum('amount'))['amount__sum']
                 result += val if val is not None else 0
         if self.prev():
             result += self.prev().balance()

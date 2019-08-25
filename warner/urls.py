@@ -26,5 +26,9 @@ urlpatterns = [
     path('transaction/save/', save_transaction, name='save-transaction'),
     path('epoch/mark-as-useful/<int:id>', mark_as_useful, name='mark-as-useful'),
     path('transaction/index/', index_transaction, name='index-transaction'),
-    path('forecast/index', index_forecast, name='index-forecast')
+    path('forecast/index', index_forecast, name='index-forecast'),
+    path('forecast/<int:id>/edit/', edit_forecast, name='edit-forecast'),
+    path('transaction/<int:id>/edit/', edit_transaction, name='edit-transaction')
+
+
 ]
