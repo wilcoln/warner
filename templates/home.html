@@ -129,9 +129,9 @@
 {% endblock %}
 {% block script %}
     <script>
-        document.onload = function (){
-            let elt = document.querySelector('.card-ongoing')
-            elt.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
-        }
+        let elt = document.querySelector('.card-epoch-ongoing').parentElement
+        setTimeout(() => {
+            elt.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"})
+        }, 1000)
     </script>
 {% endblock %}
