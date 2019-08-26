@@ -1,11 +1,11 @@
 {% extends 'layouts/base.html' %}
 {% load crispy_forms_tags %}
 {% block title %}
-    Add Transaction
+    Edit Transaction
 {% endblock %}
 {% block content %}
     <div class="container">
-        <h1>Add Transaction</h1>
+        <h1>Edit Transaction</h1>
         <form method="post" action="{% url 'save-transaction' %}">
             {% csrf_token %}
             {{ transaction_form | crispy }}
