@@ -6,14 +6,18 @@ import types
 from warner.forms import *
 
 
-def create_epochs_up_to(end_date):
-    Epoch.objects.all().delete()
-    current_date = datetime.now().date() + timedelta(days=-10)
+def create_epochs_between(start_date, end_date):
+    current_date = start_date
     while current_date < end_date:
         epoch = Epoch()
         epoch.date = current_date
         epoch.save()
         current_date = current_date + timedelta(days=1)
+
+
+def create_epochs(request):
+    create_epochs_between(datetime.datetime.now().date() + timedelta(days=-10), datetime.date(2020, 9, 14))
+    return redirect('home')
 
 
 def home(request):
@@ -77,7 +81,7 @@ def save_forecast(request):
     if request.method == 'POST':
         form = ForecastForm(request.POST)
         if form.is_valid():
-            if request.POST['forecast-id']:
+            if 'forecast-id' in request.POST.keys():
                 forecast_id = int(request.POST['forecast-id'])
                 forecast = Forecast.objects.get(pk=forecast_id)
             else:
@@ -106,7 +110,7 @@ def save_transaction(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
         if form.is_valid():
-            if request.POST['transaction-id']:
+            if 'transaction-id' in request.POST.keys():
                 transaction_id = int(request.POST['transaction-id'])
                 transaction = Transaction.objects.get(pk=transaction_id)
             else:
