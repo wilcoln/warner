@@ -6,47 +6,47 @@ import types
 from warner.forms import *
 
 
-def create_epochs_between(start_date, end_date):
+def create_episodes_between(start_date, end_date):
     current_date = start_date
     while current_date < end_date:
-        epoch = Epoch()
-        epoch.date = current_date
-        epoch.save()
+        episode = Episode()
+        episode.date = current_date
+        episode.save()
         current_date = current_date + timedelta(days=1)
 
 
-def create_epochs(request):
-    create_epochs_between(datetime.datetime.now().date() + timedelta(days=-10), datetime.date(2020, 9, 14))
+def create_episodes(request):
+    create_episodes_between(datetime.datetime.now().date() + timedelta(days=-10), datetime.date(2020, 9, 14))
     return redirect('home')
 
 
 def home(request):
-    last_epoch = Epoch.objects.last()
-    today_epoch = Epoch.objects.filter(date=datetime.datetime.now().date()).first()
+    last_episode = Episode.objects.last()
+    today_episode = Episode.objects.filter(date=datetime.datetime.now().date()).first()
     balance = types.SimpleNamespace()
-    balance.today = today_epoch.balance()
-    balance.period = last_epoch.balance()
-    epochs = Epoch.objects.all()
-    return render(request, 'home.html', {'epochs': epochs, 'balance': balance})
+    balance.today = today_episode.balance()
+    balance.period = last_episode.balance()
+    episodes = Episode.objects.all()
+    return render(request, 'home.html', {'episodes': episodes, 'balance': balance})
 
 
-def view_epoch(request, id):
-    epochs = Epoch.objects.all()
-    epoch = epochs.get(pk=id)
+def view_episode(request, id):
+    episodes = Episode.objects.all()
+    episode = episodes.get(pk=id)
     balance = types.SimpleNamespace()
-    balance.epoch = epoch.balance()
-    return render(request, 'home.html', {'epochs': epochs, 'balance': balance, 'current_epoch': epoch})
+    balance.episode = episode.balance()
+    return render(request, 'home.html', {'episodes': episodes, 'balance': balance, 'current_episode': episode})
 
-# def view_epoch(request, id):
-#     epochs = Epoch.objects.all()
-#     epoch = epochs.get(pk=id)
-#     last_epoch = epochs.last()
-#     today_epoch = epochs.filter(date=datetime.datetime.now().date()).first()
+# def view_episode(request, id):
+#     episodes = Episode.objects.all()
+#     episode = episodes.get(pk=id)
+#     last_episode = episodes.last()
+#     today_episode = episodes.filter(date=datetime.datetime.now().date()).first()
 #     balance = types.SimpleNamespace()
-#     balance.today = today_epoch.balance()
-#     balance.period = last_epoch.balance()
-#     balance.epoch = epoch.balance()
-#     return render(request, 'home.html', {'epochs': epochs, 'balance': balance, 'current_epoch': epoch})
+#     balance.today = today_episode.balance()
+#     balance.period = last_episode.balance()
+#     balance.episode = episode.balance()
+#     return render(request, 'home.html', {'episodes': episodes, 'balance': balance, 'current_episode': episode})
 
 
 def edit_forecast(request, id):
@@ -55,7 +55,7 @@ def edit_forecast(request, id):
         'is_active': forecast.is_active,
         'amount': forecast.amount,
         'reason': forecast.reason,
-        'epochs_select': forecast.epoch_set.all(),
+        'episodes_select': forecast.episode_set.all(),
     })
     return render(request, 'edit_forecast.html', {'forecast_form': forecast_form, 'forecast': forecast})
 
@@ -65,7 +65,7 @@ def edit_transaction(request, id):
     transaction_form = TransactionForm(initial={
         'amount': transaction.amount,
         'reason': transaction.reason,
-        'epoch_select': transaction.epoch,
+        'episode_select': transaction.episode,
         'forecast_select': transaction.forecast
     })
 
@@ -84,6 +84,7 @@ def save_forecast(request):
             if 'forecast-id' in request.POST.keys():
                 forecast_id = int(request.POST['forecast-id'])
                 forecast = Forecast.objects.get(pk=forecast_id)
+                forecast.episode_set.clear()
             else:
                 forecast = Forecast()
             forecast.is_active = form.cleaned_data['is_active']
@@ -91,18 +92,18 @@ def save_forecast(request):
             forecast.reason = form.cleaned_data['reason']
             forecast.save()
 
-            epochs = form.cleaned_data['epochs_select']
-            for epoch in epochs:
-                epoch.forecast_set.add(forecast)
-                epoch.is_useful = True
-                epoch.save()
+            episodes = form.cleaned_data['episodes_select']
+            for episode in episodes:
+                episode.forecast_set.add(forecast)
+                episode.is_useful = True
+                episode.save()
     return redirect('home')
 
 
 def mark_as_useful(request, id):
-    epoch = Epoch.objects.get(pk=id)
-    epoch.is_useful = True
-    epoch.save()
+    episode = Episode.objects.get(pk=id)
+    episode.is_useful = True
+    episode.save()
     return redirect('home')
 
 
@@ -117,9 +118,9 @@ def save_transaction(request):
                 transaction = Transaction()
             transaction.amount = form.cleaned_data['amount']
             transaction.reason = form.cleaned_data['reason']
-            transaction.epoch = form.cleaned_data['epoch_select']
-            transaction.epoch.is_useful = True
-            transaction.epoch.save()
+            transaction.episode = form.cleaned_data['episode_select']
+            transaction.episode.is_useful = True
+            transaction.episode.save()
             transaction.forecast = form.cleaned_data['forecast_select']
             transaction.save()
     return redirect('home')
@@ -136,6 +137,6 @@ def index_forecast(request):
 
 
 def add_transaction(request):
-    transaction_form = TransactionForm(initial={'epoch_select': Epoch.objects.filter(date=datetime.datetime.now().date()).first()})
+    transaction_form = TransactionForm(initial={'episode_select': Episode.objects.filter(date=datetime.datetime.now().date()).first()})
     return render(request, 'edit_transaction.html', {'transaction_form': transaction_form})
 

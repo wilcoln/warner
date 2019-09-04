@@ -33,7 +33,7 @@ class Forecast(models.Model):
         db_table = 'forecast'
 
 
-class Epoch(models.Model):
+class Episode(models.Model):
     is_useful = models.BooleanField(default=False)
     date = models.DateField()
     forecast_set = models.ManyToManyField(Forecast, blank=True)
@@ -42,10 +42,10 @@ class Epoch(models.Model):
         return str(self.date.strftime("%A %d %B, %Y"))
 
     def prev(self):
-        return Epoch.objects.filter(is_useful=True, date__lt=self.date).order_by('date').last()
+        return Episode.objects.filter(is_useful=True, date__lt=self.date).order_by('date').last()
 
     def next(self):
-        return Epoch.objects.filter(is_useful=True, date__gt=self.date).order_by('date').first()
+        return Episode.objects.filter(is_useful=True, date__gt=self.date).order_by('date').first()
 
     def is_over(self):
         return self.date < datetime.datetime.now().date()
@@ -94,7 +94,7 @@ class Epoch(models.Model):
 
 class Transaction(models.Model):
     amount = models.FloatField()
-    epoch = models.ForeignKey(Epoch, on_delete=models.CASCADE)
+    epoch = models.ForeignKey(Episode, on_delete=models.CASCADE)
     forecast = models.ForeignKey(Forecast, null=True, blank=True, on_delete=models.CASCADE)
     reason = models.TextField(blank=True, null=True)
 

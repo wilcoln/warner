@@ -4,18 +4,18 @@
 {% endblock %}
 {% block style %}
     <style>
-        a.epoch-link {
+        a.episode-link {
             text-decoration: unset !important;
             color: unset !important;
         }
 
-        .card-epoch-over {
+        .card-episode-over {
             background: rgba(0, 0, 0, .05);
             border: 0;
             color: grey;
         }
 
-        .card-epoch-ongoing {
+        .card-episode-ongoing {
             color: #2d99f0;
             font-weight: bold;
             background: rgba(0, 172, 255, 0.02);
@@ -32,46 +32,46 @@
         <div class="row">
             <div class="col-10">
                 <div class="row">
-                    {% for epoch in epochs %}
-                        {#                        Todo: On doit pouvoir ajouter une prévision sur cette epoch(ponctuelle), supprimer une prévision (juste son occurence sur l'epoch), ajouter une transation, supprimer une transation#}
+                    {% for episode in episodes %}
+                        {#                        Todo: On doit pouvoir ajouter une prévision sur cette episode(ponctuelle), supprimer une prévision (juste son occurence sur l'episode), ajouter une transation, supprimer une transation#}
                         <div class="col-2">
-                            <div class="card-epoch card my-2 {% if epoch.is_over %}  card-epoch-over {% elif epoch.is_ongoing %} card-epoch-ongoing {% endif %}">
+                            <div class="card-episode card my-2 {% if episode.is_over %}  card-episode-over {% elif episode.is_ongoing %} card-episode-ongoing {% endif %}">
                                 <div class="text-center">
-                                    <a class="epoch-link" data-toggle="collapse" href="#epochCollapse_{{ epoch.id }}" role="button"
+                                    <a class="episode-link" data-toggle="collapse" href="#episodeCollapse_{{ episode.id }}" role="button"
                                        aria-expanded="false">
-                                        <small>{{ epoch.date | date:"D d M Y" }}
-                                            {% if epoch.income > 0 %}
-                                                <span title="+{{ epoch.income }} €" class="text-success"><i
+                                        <small>{{ episode.date | date:"D d M Y" }}
+                                            {% if episode.income > 0 %}
+                                                <span title="+{{ episode.income }} €" class="text-success"><i
                                                         class="fa fa-arrow-circle-up"></i></span>
                                             {% endif %}
-                                            {% if epoch.outgo > 0 %}
-                                                <span title="-{{ epoch.outgo }} €" class="text-danger"><i
+                                            {% if episode.outgo > 0 %}
+                                                <span title="-{{ episode.outgo }} €" class="text-danger"><i
                                                         class="fa fa-arrow-circle-down"></i></span>
                                             {% endif %}
                                         </small>
                                     </a>
-                                    <div class="collapse {% if current_epoch and current_epoch == epoch %} show {% endif %}"
-                                         id="epochCollapse_{{ epoch.id }}">
+                                    <div class="collapse {% if current_episode and current_episode == episode %} show {% endif %}"
+                                         id="episodeCollapse_{{ episode.id }}">
                                         <div class="card-body">
                                             Previsions <br>
-                                            {% for forecast in epoch.forecast_set.all %}
+                                            {% for forecast in episode.forecast_set.all %}
                                                 <small>{{ forecast.amount }} € : {{ forecast.reason }}</small><br>
                                             {% endfor %}
-                                            {% if epoch.is_over or epoch.is_ongoing %}
+                                            {% if episode.is_over or episode.is_ongoing %}
                                                 <hr>
                                                 Transactions <br>
-                                                {% for transaction in epoch.transaction_set.all %}
+                                                {% for transaction in episode.transaction_set.all %}
                                                     <small>{{ transaction.amount }} € : {{ transaction.reason }}</small>
                                                     <br>
                                                 {% endfor %}
                                             {% endif %}
                                             <hr>
                                             <a class="btn btn-primary text-light btn-sm"
-                                               href="{% url 'view-epoch' epoch.id %}"> Compute Balance</a>
+                                               href="{% url 'view-episode' episode.id %}"> Compute Balance</a>
                                             {% comment %}<br>
-                                            {{ epoch.is_useful }}
+                                            {{ episode.is_useful }}
                                             <a class="btn btn-primary text-light btn-sm"
-                                               href="{% url 'mark-as-useful' epoch.id %}"> Mark as useful</a>{% endcomment %}
+                                               href="{% url 'mark-as-useful' episode.id %}"> Mark as useful</a>{% endcomment %}
                                         </div>
 
                                     </div>
@@ -91,8 +91,8 @@
                         {% if balance.period %}
                             Over the school year : {{ balance.period | floatformat:-2 }} € <br>
                         {% endif %}
-                        {% if balance.epoch %}
-                            On {{ current_epoch.date | date:"D d M Y" }} : {{ balance.epoch | floatformat:-2 }} €
+                        {% if balance.episode %}
+                            On {{ current_episode.date | date:"D d M Y" }} : {{ balance.episode | floatformat:-2 }} €
                         {% endif %}
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                     <div class="card-header">Prévisions</div>
                     <div class="card-body">
                         <a href="{% url 'add-forecast' %}">Ajouter une prévision</a>
-                        {% comment %}Ajout simple des epochs concernés, soit par ajout spécifique ou périodiquement en fixant un interval, une epoch de début et une époch de fin, mensuel préciser le x de chaque mois
+                        {% comment %}Ajout simple des episodes concernés, soit par ajout spécifique ou périodiquement en fixant un interval, une episode de début et une époch de fin, mensuel préciser le x de chaque mois
                         hebdo, le jour de chaque semaine{% endcomment %}
                         <br>
                         <a href="{% url 'index-forecast' %}">Consulter les prévisions</a>
@@ -115,7 +115,7 @@
                     <div class="card-header">Transactions</div>
                     <div class="card-body">
                         <a href="{% url 'add-transaction' %}">Ajouter une transaction</a>
-                        {% comment %}Ajout d'une transaction, on selectionne une epoch (par défaut) l'epoch courante{% endcomment %}
+                        {% comment %}Ajout d'une transaction, on selectionne une episode (par défaut) l'episode courante{% endcomment %}
                         <br>
                         <a href="{% url 'index-transaction' %}">Consulter les transactions</a>
                         <br>
@@ -129,7 +129,7 @@
 {% endblock %}
 {% block script %}
     <script>
-        let elt = document.querySelector('.card-epoch-ongoing').parentElement
+        let elt = document.querySelector('.card-episode-ongoing').parentElement
         setTimeout(() => {
             elt.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"})
         }, 1000)
