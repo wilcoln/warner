@@ -89,17 +89,17 @@ class Episode(models.Model):
         return result
 
     class Meta:
-        db_table = 'epoch'
+        db_table = 'episode'
 
 
 class Transaction(models.Model):
     amount = models.FloatField()
-    epoch = models.ForeignKey(Episode, on_delete=models.CASCADE)
+    episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
     forecast = models.ForeignKey(Forecast, null=True, blank=True, on_delete=models.CASCADE)
     reason = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.epoch) + ', ' + str(self.amount) + ', ' + self.reason
+        return str(self.episode) + ', ' + str(self.amount) + ', ' + self.reason
 
     class Meta:
         db_table = 'transaction'
