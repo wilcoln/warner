@@ -89,7 +89,7 @@
                             Today : {{ balance.today | floatformat:-2 }} € <br>
                         {% endif %}
                         {% if balance.period %}
-                            Over the school year : {{ balance.period | floatformat:-2 }} € <br>
+                            Over the year : {{ balance.period | floatformat:-2 }} € <br>
                         {% endif %}
                         {% if balance.episode %}
                             On {{ current_episode.date | date:"D d M Y" }} : {{ balance.episode | floatformat:-2 }} €
